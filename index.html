@@ -1,209 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plant Card Manager</title>
-    <style>
-        .card {
-            border: 1px solid black;
-            padding: 10px;
-            margin-bottom: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .card label {
-            margin-bottom: 5px;
-            width: 100%;
-        }
-        .card img {
-            width: 100px;  /* 或者您期望的任何尺寸 */
-            height: 100px; /* 图片高度 */
-            object-fit: cover; /* 保证图片不变形 */
-            margin-bottom: 5px;
-        }
-        .card input {
-            width: calc(100% - 60px); /* 减去label的宽度，保持input不超过边界 */
-            margin-left: 10px;
-        }
-    </style>
-    
-    
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Card Manager</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
 </head>
 <body>
-    <h1>Plant Card Manager</h1>
-    <form id="card-form">
-        <input type="text" id="name" placeholder="Plant Name" required>
-        <div>
-            光照:
-            <label><input type="radio" name="light" value="全日照" required> 全日照</label>
-            <label><input type="radio" name="light" value="半日照" required> 半日照</label>
-            <label><input type="radio" name="light" value="全遮光" required> 全遮光</label>
-            <label><input type="radio" name="light" value="半遮光" required> 半遮光</label>
-        </div>
-        <input type="text" id="water" placeholder="Water" required>
-        <input type="date" id="lastWatered" placeholder="Last Watered Date" required>
-        <input type="number" id="wateringInterval" placeholder="Watering Interval (days)" required>
-        <input type="file" id="image" accept="image/*" required>
-        <button type="submit">Add Card</button>
-    </form>
-    
-    
-    <div id="card-container"></div>
+  <div id="app">
+    <h1>Card Manager</h1>
+    <button @click="newCard">New Card</button>
+    <div v-for="(card, index) in cards" :key="index">
+      <template v-if="!card.editing">
+        <div>{{ card.content }}</div>
+        <button @click="editCard(card)">Edit</button>
+      </template>
+      <template v-else>
+        <textarea v-model="card.content"></textarea>
+        <button @click="saveCard(card)">Save</button>
+        <button @click="cancelEdit(card)">Cancel</button>
+      </template>
+      <button @click="deleteCard(card)">Delete</button>
+    </div>
+  </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-    let db;
-    const cardForm = document.getElementById('card-form');
-    const cardContainer = document.getElementById('card-container');
-
-    const request = indexedDB.open('plantDatabase', 1);
-    request.onupgradeneeded = function(event) {
-        db = event.target.result;
-        if (!db.objectStoreNames.contains('plants')) {
-            db.createObjectStore('plants', { keyPath: 'id', autoIncrement: true });
-        }
-    };
-
-    request.onsuccess = function(event) {
-        db = event.target.result;
-        displayCards();
-    };
-
-    request.onerror = function(event) {
-        console.error('Database error: ' + event.target.errorCode);
-    };
-
-    cardForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const nameInput = document.getElementById('name');
-        const lightInput = document.querySelector('input[name="light"]:checked');
-        const waterInput = document.getElementById('water');
-        const lastWateredInput = document.getElementById('lastWatered');
-        const wateringIntervalInput = document.getElementById('wateringInterval');
-        const imageInput = document.getElementById('image');
-
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            addCard(
-                nameInput.value,
-                lightInput.value,
-                waterInput.value,
-                lastWateredInput.value,
-                wateringIntervalInput.value,
-                event.target.result
-            );
-            nameInput.value = '';
-            waterInput.value = '';
-            lastWateredInput.value = '';
-            wateringIntervalInput.value = '';
-            imageInput.value = '';
-            document.querySelectorAll('input[name="light"]').forEach((input) => input.checked = false);
+  <script>
+    // Open IndexedDB database
+    const openDB = () => {
+      return new Promise((resolve, reject) => {
+        const request = window.indexedDB.open('cardDB', 1);
+        request.onerror = (event) => {
+          console.error('Database error:', event.target.errorCode);
+          reject(event.target.errorCode);
         };
-        reader.readAsDataURL(imageInput.files[0]);
+        request.onsuccess = (event) => {
+          const db = event.target.result;
+          resolve(db);
+        };
+        request.onupgradeneeded = (event) => {
+          const db = event.target.result;
+          const objectStore = db.createObjectStore('cards', { keyPath: 'id' });
+        };
+      });
+    };
+
+    new Vue({
+      el: '#app',
+      data: {
+        cards: []
+      },
+      created() {
+        openDB().then(db => {
+          this.db = db;
+          this.getCards();
+        });
+      },
+      methods: {
+        getCards() {
+          const transaction = this.db.transaction(['cards'], 'readonly');
+          const objectStore = transaction.objectStore('cards');
+          const request = objectStore.getAll();
+          request.onsuccess = () => {
+            this.cards = request.result.map(card => ({ ...card, editing: false }));
+          };
+        },
+        newCard() {
+          this.cards.push({ id: Date.now(), content: '', editing: true });
+        },
+        editCard(card) {
+          card.editing = true;
+        },
+        saveCard(card) {
+          const transaction = this.db.transaction(['cards'], 'readwrite');
+          const objectStore = transaction.objectStore('cards');
+          const request = objectStore.put(card);
+          request.onsuccess = () => {
+            card.editing = false;
+            console.log('Saved:', card.content);
+          };
+        },
+        cancelEdit(card) {
+          // Reload the content from the database
+          this.getCards();
+        },
+        deleteCard(card) {
+          const transaction = this.db.transaction(['cards'], 'readwrite');
+          const objectStore = transaction.objectStore('cards');
+          const request = objectStore.delete(card.id);
+          request.onsuccess = () => {
+            const index = this.cards.findIndex(item => item.id === card.id);
+            this.cards.splice(index, 1);
+          };
+        }
+      }
     });
-
-    function addCard(name, light, water, lastWatered, wateringInterval, imgSrc) {
-        const transaction = db.transaction(['plants'], 'readwrite');
-        const store = transaction.objectStore('plants');
-        const card = {
-            name: name,
-            light: light,
-            water: water,
-            lastWatered: lastWatered,
-            wateringInterval: wateringInterval,
-            image: imgSrc
-        };
-        store.add(card).onsuccess = displayCards;
-    }
-
-    function displayCards() {
-        const transaction = db.transaction(['plants'], 'readonly');
-        const store = transaction.objectStore('plants');
-        const cursorRequest = store.openCursor();
-        cardContainer.innerHTML = '';
-
-        cursorRequest.onsuccess = function(event) {
-            const cursor = event.target.result;
-            if (cursor) {
-                const card = cursor.value;
-                const cardDiv = document.createElement('div');
-                cardDiv.className = 'card';
-                cardDiv.setAttribute('data-id', cursor.key);
-                cardDiv.innerHTML = `
-                    <img src="${card.image}" alt="Plant Image">
-                    <label>名称: <input type="text" value="${card.name}" readonly></label>
-                    <label>光照: ${card.light}</label>
-                    <label>水分: <input type="text" value="${card.water}" readonly></label>
-                    <label>上次浇水日期: ${card.lastWatered}</label>
-                    <label>浇水间隔: ${card.wateringInterval} 天</label>
-                `;
-                const editButton = document.createElement('button');
-                editButton.textContent = 'Edit';
-                editButton.className = 'edit';
-                editButton.onclick = function() { toggleEditSave(cardDiv, true); };
-                cardDiv.appendChild(editButton);
-
-                const deleteButton = document.createElement('button');
-                deleteButton.textContent = 'Delete';
-                deleteButton.onclick = function() { deleteCard(cursor.key); };
-                cardDiv.appendChild(deleteButton);
-
-                cardContainer.appendChild(cardDiv);
-                cursor.continue();
-            }
-        };
-    }
-
-    function deleteCard(id) {
-        const transaction = db.transaction(['plants'], 'readwrite');
-        const store = transaction.objectStore('plants');
-        store.delete(id).onsuccess = displayCards;
-    }
-
-    function toggleEditSave(card, isEditing) {
-        const inputs = card.querySelectorAll('input[type="text"], input[type="date"], input[type="number"]');
-        const editButton = card.querySelector('.edit');
-        if (isEditing) {
-            inputs.forEach(input => input.removeAttribute('readonly'));
-            editButton.textContent = 'Save';
-            editButton.onclick = function() {
-                toggleEditSave(card, false);
-                updateCard(card.dataset.id, ...collectInputData(card));
-            };
-        } else {
-            inputs.forEach(input => input.setAttribute('readonly', true));
-            editButton.textContent = 'Edit';
-            editButton.onclick = function() { toggleEditSave(card, true); };
-        }
-    }
-
-    function updateCard(id, name, light, water, lastWatered, wateringInterval) {
-        const transaction = db.transaction(['plants'], 'readwrite');
-        const store = transaction.objectStore('plants');
-        const request = store.get(id);
-        request.onsuccess = () => {
-            const data = request.result;
-            data.name = name;
-            data.light = light;
-            data.water = water;
-            data.lastWatered = lastWatered;
-            data.wateringInterval = wateringInterval;
-            store.put(data).onsuccess = displayCards;
-        };
-    }
-
-    function collectInputData(card) {
-        const nameInput = card.querySelector('input[type="text"]:nth-child(1)');
-        const lightInput = card.querySelector('input[name="light"]:checked').value;
-        const waterInput = card.querySelector('input[type="text"]:nth-child(3)');
-        const lastWateredInput = card.querySelector('input[type="date"]');
-        const wateringIntervalInput = card.querySelector('input[type="number"]');
-        return [nameInput.value, lightInput, waterInput.value, lastWateredInput.value, wateringIntervalInput.value];
-    }
-});
-
-    </script>
+  </script>
 </body>
 </html>
