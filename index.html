@@ -5,95 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Card Manager</title>
   <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css"> -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <h1>Card Manager</h1>
+  
   <div id="app">
-    <h1>Card Manager</h1>
     <button @click="newCard">New Card</button>
-    <div v-for="(card, index) in cards" :key="index">
+    <div v-for="(card, index) in cards" :key="index" class="card">
       <template v-if="!card.editing">
-        <div>{{ card.content }}</div>
+        <h2>标题：{{ card.title }}</h2>
+        <h3>副标题：{{ card.subtitle }}</h3>
+        <div>{{ card.description }}</div>
+        <img :src="card.image" v-if="card.image" alt="Card Image">
+        <p>Sunlight: {{ card.sunlight }}</p>
         <button @click="editCard(card)">Edit</button>
       </template>
       <template v-else>
-        <textarea v-model="card.content"></textarea>
+        <input type="text" v-model="card.title" placeholder="Title">
+        <input type="text" v-model="card.subtitle" placeholder="Subtitle">
+        <textarea v-model="card.description" placeholder="Description"></textarea>
+        <input type="file" @change="handleFileUpload($event, card)">
+        <label><input type="radio" v-model="card.sunlight" value="full"> Full Sunlight</label>
+        <label><input type="radio" v-model="card.sunlight" value="partial"> Partial Sunlight</label>
         <button @click="saveCard(card)">Save</button>
         <button @click="cancelEdit(card)">Cancel</button>
       </template>
       <button @click="deleteCard(card)">Delete</button>
     </div>
   </div>
-
-  <script>
-    // Open IndexedDB database
-    const openDB = () => {
-      return new Promise((resolve, reject) => {
-        const request = window.indexedDB.open('cardDB', 1);
-        request.onerror = (event) => {
-          console.error('Database error:', event.target.errorCode);
-          reject(event.target.errorCode);
-        };
-        request.onsuccess = (event) => {
-          const db = event.target.result;
-          resolve(db);
-        };
-        request.onupgradeneeded = (event) => {
-          const db = event.target.result;
-          const objectStore = db.createObjectStore('cards', { keyPath: 'id' });
-        };
-      });
-    };
-
-    new Vue({
-      el: '#app',
-      data: {
-        cards: []
-      },
-      created() {
-        openDB().then(db => {
-          this.db = db;
-          this.getCards();
-        });
-      },
-      methods: {
-        getCards() {
-          const transaction = this.db.transaction(['cards'], 'readonly');
-          const objectStore = transaction.objectStore('cards');
-          const request = objectStore.getAll();
-          request.onsuccess = () => {
-            this.cards = request.result.map(card => ({ ...card, editing: false }));
-          };
-        },
-        newCard() {
-          this.cards.push({ id: Date.now(), content: '', editing: true });
-        },
-        editCard(card) {
-          card.editing = true;
-        },
-        saveCard(card) {
-          const transaction = this.db.transaction(['cards'], 'readwrite');
-          const objectStore = transaction.objectStore('cards');
-          const request = objectStore.put(card);
-          request.onsuccess = () => {
-            card.editing = false;
-            console.log('Saved:', card.content);
-          };
-        },
-        cancelEdit(card) {
-          // Reload the content from the database
-          this.getCards();
-        },
-        deleteCard(card) {
-          const transaction = this.db.transaction(['cards'], 'readwrite');
-          const objectStore = transaction.objectStore('cards');
-          const request = objectStore.delete(card.id);
-          request.onsuccess = () => {
-            const index = this.cards.findIndex(item => item.id === card.id);
-            this.cards.splice(index, 1);
-          };
-        }
-      }
-    });
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>
