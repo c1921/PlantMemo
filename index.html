@@ -1,40 +1,112 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Card Manager</title>
   <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
-  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css"> -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Card Manager</h1>
   
-  <div id="app">
-    <button @click="newCard">New Card</button>
-    <div v-for="(card, index) in cards" :key="index" class="card">
+  
+  <div id="app" class="section">
+    <p class="title is-1">Plant Management</p>
+    <button @click="newCard" class="button is-light">New Card</button>
+    <div class="fixed-grid has-3-cols-desktop has-2-cols-tablet has-1-cols-mobile">
+    <div class="grid">
+    
+    <div v-for="(card, index) in cards" :key="index">
       <template v-if="!card.editing">
-        <h2>标题：{{ card.title }}</h2>
-        <h3>副标题：{{ card.subtitle }}</h3>
-        <div>{{ card.description }}</div>
-        <img :src="card.image" v-if="card.image" alt="Card Image">
-        <p>Sunlight: {{ card.sunlight }}</p>
-        <button @click="editCard(card)">Edit</button>
+        
+          <div class="card">
+            <div class="card-image">
+              <figure class="image is-4by3">
+                <img :src="card.image" v-if="card.image" alt="Card Image">
+              </figure>
+            </div>
+            <div class="card-content">
+              <div class="media">
+                <div class="media-content py-1">
+                  <p class="title is-4">植物名称：{{ card.title }}</p>
+                  <p class="subtitle is-4 is-italic">学名：{{ card.subtitle }}</p>
+                </div>
+              </div>
+              <div class="content">
+                {{ card.description }}
+                <p>Sunlight: {{ card.sunlight }}</p>
+              </div>
+            </div>
+            <footer class="card-footer">
+              <button @click="editCard(card)" class="card-footer-item">Edit</button>
+              <button @click="deleteCard(card)" class="card-footer-item">Delete</button>
+            </footer>
+          </div>
       </template>
+      
       <template v-else>
-        <input type="text" v-model="card.title" placeholder="Title">
-        <input type="text" v-model="card.subtitle" placeholder="Subtitle">
-        <textarea v-model="card.description" placeholder="Description"></textarea>
-        <input type="file" @change="handleFileUpload($event, card)">
-        <label><input type="radio" v-model="card.sunlight" value="full"> Full Sunlight</label>
-        <label><input type="radio" v-model="card.sunlight" value="partial"> Partial Sunlight</label>
-        <button @click="saveCard(card)">Save</button>
-        <button @click="cancelEdit(card)">Cancel</button>
+        <div class="box">
+          <div class="field">
+            <label class="label">植物名称</label>
+            <div class="control">
+              <input class="input" type="text" v-model="card.title" placeholder="输入植物名称">
+            </div>
+          </div>
+          <div class="field">
+            <label class="label">植物学名</label>
+            <div class="control">
+              <input class="input" type="text" v-model="card.subtitle" placeholder="输入拉丁学名">
+            </div>
+          </div>
+          <div class="field">
+            <label class="label">简介</label>
+            <div class="control">
+              <textarea class="textarea" v-model="card.description" placeholder="输入植物简介"></textarea>
+            </div>
+          </div>
+          
+          <div class="field">
+            <label class="label">光照</label>
+            <div class="control">
+              <div class="select">
+                <select v-model="card.sunlight">
+                  <option value="full">Full Sunlight</option>
+                  <option value="partial">Partial Sunlight</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div id="file-js-example" class="file has-name">
+            <label class="file-label">
+              <input class="file-input" type="file" @change="handleFileUpload($event, card)" name="resume" />
+              <span class="file-cta">
+                <span class="file-icon">
+                  <i class="fas fa-upload"></i>
+                </span>
+                <span class="file-label"> Choose a file… </span>
+              </span>
+              <span class="file-name"> No file uploaded </span>
+            </label>
+          </div>
+          <button @click="saveCard(card)" class="button is-light">Save</button>
+          <button @click="cancelEdit(card)" class="button is-light">Cancel</button>
+        </div>
+        
       </template>
-      <button @click="deleteCard(card)">Delete</button>
     </div>
   </div>
+</div>
+  </div>
   <script src="app.js"></script>
+  <script>
+    const fileInput = document.querySelector("#file-js-example input[type=file]");
+    fileInput.onchange = () => {
+      if (fileInput.files.length > 0) {
+        const fileName = document.querySelector("#file-js-example .file-name");
+        fileName.textContent = fileInput.files[0].name;
+      }
+    };
+  </script>
 </body>
 </html>
