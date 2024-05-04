@@ -24,7 +24,8 @@ const openDB = () => {
   new Vue({
     el: '#app',
     data: {
-      cards: []
+      cards: [],
+      selectedFileName: ''  // 在数据中添加一个用来存储文件名的属性
     },
     created() {
       // 打开数据库并获取所有数据
@@ -78,13 +79,60 @@ const openDB = () => {
         };
       },
       handleFileUpload(event, card) {
-        // 上传文件
         const file = event.target.files[0];
-        const reader = new FileReader();
-        reader.onload = () => {
-          card.image = reader.result;
-        };
-        reader.readAsDataURL(file);
+        if (file) {
+            // 更新选中的文件名
+            this.selectedFileName = file.name;
+    
+            // 创建一个FileReader来读取文件
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                // 文件读取完毕后，将结果赋值给卡片的图片属性，用于显示
+                card.image = e.target.result;
+            };
+            // 以DataURL的形式读取文件内容
+            reader.readAsDataURL(file);
+    
+            // 更新最后浇水日期为今天，假设文件上传的同时也是植物的维护日期
+            card.lastWatered = new Date().toISOString().split('T')[0];
+    
+            // 如果有需要，这里可以调用保存或更新植物信息的函数
+            // this.saveCard(card);
+        } else {
+            // 如果没有选择文件，清除之前的文件名显示
+            this.selectedFileName = '';
+        }
+    }
+    ,
+      calculateProgress(card) {
+        const today = new Date();
+        const lastWateredDate = new Date(card.lastWatered);
+        
+        // 计算自上次浇水以来的天数，向下取整以确保不会有小数天数
+        const daysSinceLastWatered = Math.floor((today - lastWateredDate) / (1000 * 60 * 60 * 24));
+      
+        // 如果上次浇水日期在未来，则进度为 0
+        if (daysSinceLastWatered < 0) {
+          return 0;
+        }
+      
+        // 如果上次浇水日期是今天，则进度为 100
+        if (daysSinceLastWatered === 0) {
+          return 100;
+        }
+      
+        // 如果上次浇水日期在过去，计算剩余天数
+        const interval = card.wateringInterval;
+        let progress = 100 - ((daysSinceLastWatered / interval) * 100);
+        
+        // 确保进度在 0 到 100 之间
+        progress = Math.min(100, Math.max(0, progress));
+        return progress;
+      },
+      
+      waterCard(card) {
+        card.lastWatered = new Date().toISOString().split('T')[0];
+        this.saveCard(card);
       }
     }
   });
