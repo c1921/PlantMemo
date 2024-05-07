@@ -64,9 +64,14 @@ new Vue({
 			};
 		},
 		cancelEdit(card) {
-			// 取消编辑
-			// Reload the content from the database
-			this.getCards();
+			// 弹出确认对话框
+			if (confirm("确定要取消编辑，并放弃所有未保存的更改吗？")) {
+				// 如果用户点击"确定"，则取消编辑并重新加载卡片数据
+				this.getCards();  // 重新加载卡片，放弃当前的编辑状态和更改
+			} else {
+				// 如果用户点击"取消"，则不执行任何操作，继续保持编辑状态
+				console.log('取消操作已取消，继续编辑');
+			}
 		},
 		deleteCard(card) {
 			// 弹出确认对话框
