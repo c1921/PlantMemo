@@ -6,9 +6,7 @@
 
 input[type="date"] {
     position: relative;
-    -webkit-appearance: none; /* 移除iOS上的默认样式 */
     background: transparent;
-    border: 1px solid #ccc;
     padding: 10px;
     cursor: pointer; /* 鼠标指针变为手型 */
 }

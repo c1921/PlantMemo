@@ -96,10 +96,18 @@
               </div>
             </div>
           </div>
-          <div class="control">
-            <input class="input" type="date" v-model="card.lastWatered" placeholder="Last Watered">
+          <div class="field">
+            <label class="label">上次浇水日期</label>
+            <div class="control">
+              <input class="input" type="date" v-model="card.lastWatered" placeholder="Last Watered">
+            </div>
           </div>
-          <input class="input" type="number" v-model="card.wateringInterval" placeholder="Watering Interval (days)">
+          <div class="field">
+            <label class="label">浇水间隔</label>
+            <div class="control">
+              <input class="input" type="number" v-model="card.wateringInterval" placeholder="浇水间隔（天）">
+            </div>
+          </div>
           <button @click="saveCard(card)" class="button is-light">保存</button>
           <button @click="cancelEdit(card)" class="button">取消</button>
         </div>
