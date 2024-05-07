@@ -1,4 +1,5 @@
-.card img ,.image img {
+.card img,
+.image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -8,18 +9,23 @@ input[type="date"] {
     position: relative;
     background: transparent;
     padding: 10px;
-    cursor: pointer; /* 鼠标指针变为手型 */
+    cursor: pointer;
+    /* 鼠标指针变为手型 */
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
-    position: absolute; /* 绝对定位，覆盖整个输入框 */
+    position: absolute;
+    /* 绝对定位，覆盖整个输入框 */
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
     width: 100%;
     height: 100%;
-    color: transparent; /* 隐藏原有的图标 */
-    background: transparent; /* 无背景 */
-    cursor: pointer; /* 鼠标指针变为手型 */
+    color: transparent;
+    /* 隐藏原有的图标 */
+    background: transparent;
+    /* 无背景 */
+    cursor: pointer;
+    /* 鼠标指针变为手型 */
 }
