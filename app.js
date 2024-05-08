@@ -145,7 +145,71 @@ new Vue({
 		waterCard(card) {
 			card.lastWatered = new Date().toISOString().split('T')[0];
 			this.saveCard(card);
-		}
+		},
+		triggerFileInput() {
+			document.getElementById('fileInput').click(); // 触发隐藏的文件输入点击事件
+		},
+		importData(event) {
+			const file = event.target.files[0];
+			if (file) {
+				const reader = new FileReader();
+				reader.onload = (e) => {
+					const cards = JSON.parse(e.target.result);
+					const transaction = this.db.transaction(['cards'], 'readwrite');
+					const objectStore = transaction.objectStore('cards');
+					cards.forEach(card => {
+						objectStore.put(card);
+					});
+					transaction.oncomplete = () => {
+						console.log('所有数据已成功导入');
+						this.getCards(); // 重新加载卡片以更新视图
+					};
+				};
+				reader.readAsText(file);
+			}
+		},
+		exportData() {
+			const transaction = this.db.transaction(['cards'], 'readonly');
+			const objectStore = transaction.objectStore('cards');
+			const request = objectStore.getAll();
+
+			request.onsuccess = () => {
+				const jsonData = JSON.stringify(request.result);
+				const blob = new Blob([jsonData], { type: 'application/json' });
+
+				// 生成包含当前日期的文件名
+				const date = new Date();
+				const formattedDate = date.toISOString().slice(0, 10).replace(/-/g, '');  // 格式为 YYYYMMDD
+				const filename = `PlantMemo_data_${formattedDate}.json`;
+
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = filename;
+				a.click();
+				URL.revokeObjectURL(url);
+				console.log('数据导出成功');
+			};
+		},
+		importData(event) {
+			const file = event.target.files[0];
+			if (file) {
+				const reader = new FileReader();
+				reader.onload = (e) => {
+					const cards = JSON.parse(e.target.result);
+					const transaction = this.db.transaction(['cards'], 'readwrite');
+					const objectStore = transaction.objectStore('cards');
+					cards.forEach(card => {
+						objectStore.put(card);
+					});
+					transaction.oncomplete = () => {
+						console.log('所有数据已成功导入');
+						this.getCards(); // 重新加载卡片以更新视图
+					};
+				};
+				reader.readAsText(file);
+			}
+		},
 	}
 });
 
