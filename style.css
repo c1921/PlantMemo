@@ -29,3 +29,25 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     cursor: pointer;
     /* 鼠标指针变为手型 */
 }
+
+/* 定义滚动条的宽度 */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+/* 定义滚动条轨道的样式 */
+::-webkit-scrollbar-track {
+    background: #00000000;
+    border-radius: 10px;
+}
+
+/* 定义滚动条拖动块的样式 */
+::-webkit-scrollbar-thumb {
+    background: #2a2e35;
+    border-radius: 10px;
+}
+
+/* 当鼠标悬停在滚动条拖动块上时改变颜色 */
+::-webkit-scrollbar-thumb:hover {
+    background: #505358;
+}
