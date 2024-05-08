@@ -155,9 +155,9 @@
 								<div class="content">
 									{{ card.description }}
 									<p>光照：{{ card.sunlight }}</p>
-									<div class="field has-addons">
-										<progress class="progress is-success is-large"
-											v-bind:value="calculateProgress(card)" max="100"></progress>
+									<div class="field has-addons vertical-center">
+										<progress class="progress is-success is-large" v-bind:value="calculateProgress(card)" max="100">
+										</progress>
 										<button @click="waterCard(card)" class="button">浇水</button>
 									</div>
 

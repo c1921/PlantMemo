@@ -51,3 +51,12 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 ::-webkit-scrollbar-thumb:hover {
     background: #505358;
 }
+
+.vertical-center {
+    display: flex;
+    align-items: center;
+}
+
+.field progress:not(:last-child) {
+margin-bottom: 0
+}
