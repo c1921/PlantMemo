@@ -13,13 +13,19 @@
 <body>
 
 	<div id="app" class="section">
-		
+
 		<header class="mb-5">
 			<p class="title is-1">PlantMemo</p>
-			<button @click="newCard" class="button is-success">新建植物</button>
-			<button @click="exportData" class="button is-info">导出数据</button>
-			<button @click="triggerFileInput" class="button is-info">导入数据</button>
-			<input type="file" id="fileInput" @change="importData" style="display: none;" />
+			<div class="is-flex is-justify-content-space-between">
+				<div>
+					<button @click="newCard" class="button is-success">新建植物</button>
+				</div>
+				<div>
+					<button @click="exportData" class="button">导出数据</button>
+					<button @click="triggerFileInput" class="button">导入数据</button>
+					<input type="file" id="fileInput" @change="importData" style="display: none;" />
+				</div>
+			</div>
 		</header>
 
 		<div class="fixed-grid has-4-cols-desktop has-2-cols-tablet has-1-cols-mobile">
