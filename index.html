@@ -11,6 +11,111 @@
 </head>
 
 <body>
+	<nav class="navbar" role="navigation" aria-label="main navigation">
+		<div class="navbar-brand">
+			<a class="navbar-item" href="index.html">
+				<img class="logo" src="img/LOGO/cdfp.png" alt="Logo">
+				<p class="title is-3 pl-2">CDFP</p>
+			</a>
+
+			<a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar-link">
+				<span aria-hidden="true"></span>
+				<span aria-hidden="true"></span>
+				<span aria-hidden="true"></span>
+				<span aria-hidden="true"></span>
+			</a>
+		</div>
+
+		<div id="navbar-link" class="navbar-menu">
+			<div class="navbar-start">
+				<a href="index.html" class="navbar-item">
+					<span class="icon">
+						<i class="fas fa-home"></i>
+					</span>
+					<span>主页</span>
+				</a>
+
+				<a href="about.html" class="navbar-item">
+					<span class="icon">
+						<i class="fas fa-info-circle"></i>
+					</span>
+					<span>关于</span>
+				</a>
+
+				<a href="about.html" class="navbar-item">
+					<span class="icon">
+						<i class="fab fa-github"></i>
+					</span>
+					<span>Github</span>
+				</a>
+
+				<div class="navbar-item has-dropdown is-hoverable">
+					<a class="navbar-link">
+						更多
+					</a>
+
+					<div class="navbar-dropdown">
+						<a href="https://c1921.space/" class="navbar-item">
+							<span class="icon">
+								<i class="fas fa-globe-asia"></i>
+							</span>
+							<span>C1921</span>
+
+						</a>
+						<a href="https://github.com/c1921/CDFP/issues" class="navbar-item is-selected">
+							<span class="icon">
+								<i class="fas fa-bug"></i>
+							</span>
+							<span>报告问题</span>
+						</a>
+					</div>
+				</div>
+			</div>
+
+			<div class="navbar-end">
+				<div class="navbar-item dropdown is-right">
+					<div class="dropdown-trigger">
+						<button class="button" aria-haspopup="true" aria-controls="theme-dropdown-menu">
+							<span class="icon has-text-warning" id="theme-icon">
+								<i class="fas fa-lg fa-sun"></i>
+							</span>
+						</button>
+					</div>
+					<div class="dropdown-menu" id="theme-dropdown-menu" role="menu">
+						<div class="dropdown-content">
+							<a class="dropdown-item" onclick="setTheme('system')">
+							<span class="icon-text">
+								<span class="icon has-text-success">
+									<i class="fas fa-desktop"></i>
+								</span>
+								<span>跟随系统</span>
+							</span>
+							</a>
+							<a class="dropdown-item" onclick="setTheme('light')">
+								<span class="icon-text">
+									<span class="icon has-text-warning">
+										<i class="fas fa-lg fa-sun"></i>
+									</span>
+									<span>亮色</span>
+								</span>
+							</a>
+							<a class="dropdown-item" onclick="setTheme('dark')">
+								<span class="icon-text">
+									<span class="icon has-text-link">
+										<i class="fas fa-lg fa-moon"></i>
+									</span>
+									<span>暗色</span>
+								</span>
+
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</nav>
+
+
 
 	<div id="app" class="section">
 
@@ -24,6 +129,7 @@
 					<button @click="exportData" class="button">导出数据</button>
 					<button @click="triggerFileInput" class="button">导入数据</button>
 					<input type="file" id="fileInput" @change="importData" style="display: none;" />
+
 				</div>
 			</div>
 		</header>
@@ -134,7 +240,9 @@
 			</div>
 		</div>
 	</div>
-	<script src="app.js"></script>
+	<script src="script/app.js"></script>
+	<script src="script/bulma.js"></script>
+	<script src="https://kit.fontawesome.com/956b802913.js" crossorigin="anonymous"></script>
 </body>
 
 </html>
