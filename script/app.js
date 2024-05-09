@@ -64,6 +64,10 @@ new Vue({
 		},
 		closeModal() {
 			this.isModalOpen = false;
+			this.currentCard = null;
+		},
+		handleBackgroundClick() {
+			this.closeModal(); // 调用关闭模态的方法
 		},
 		getCards() {
 			// 读取所有数据

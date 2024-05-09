@@ -172,17 +172,17 @@
 		</div>
 		<!-- 模态窗口 -->
 		<div class="modal" :class="{ 'is-active': isModalOpen && currentCard }">
-			<div class="modal-background"></div>
-			<div class="modal-content" v-if="currentCard">
+			<div class="modal-background" @click="modalMode === 'details' ? closeModal() : null"></div>
+			<div class="modal-content" v-if="currentCard" @click.stop>
 				<!-- 详情视图 -->
 				<div v-if="modalMode === 'details'">
 					<div class="modal-card">
 						<header class="modal-card-head">
 							<p class="modal-card-title">{{ currentCard.title }}</p>
-							<button class="delete" aria-label="close"></button>
+							<button class="delete" aria-label="close" @click="closeModal"></button>
 						</header>
 						<section class="modal-card-body">
-							
+
 							<p class="is-italic">{{ currentCard.subtitle }}</p>
 							<img :src="currentCard.image" v-if="currentCard.image" alt="Card Image">
 							<div class="content">
@@ -271,7 +271,6 @@
 					<button @click="deleteCard(currentCard)" class="button is-danger">删除</button>
 				</div>
 			</div>
-			<button class="modal-close is-large" aria-label="close" @click="closeModal"></button>
 		</div>
 
 
