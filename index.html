@@ -14,7 +14,7 @@
 	<nav class="navbar" role="navigation" aria-label="main navigation">
 		<div class="navbar-brand">
 			<a class="navbar-item" href="index.html">
-				<!-- <img class="logo" src="img/LOGO/cdfp.png" alt="Logo"> -->
+				<!-- <img class="logo" src="" alt="Logo"> -->
 				<p class="title is-3 pl-2">PlantMemo</p>
 			</a>
 
@@ -157,7 +157,6 @@
 										</progress>
 										<button @click="waterCard(card)" class="button ml-2">浇水</button>
 									</div>
-
 								</div>
 							</div>
 							<footer class="card-footer">
@@ -191,6 +190,13 @@
 							<p>光照: {{ currentCard.sunlight }}</p>
 							<p>上次浇水日期: {{ currentCard.lastWatered }}</p>
 							<p>浇水间隔: {{ currentCard.wateringInterval }} 天</p>
+							<div class="content">
+								<div class="field has-addons vertical-center">
+									<progress class="progress is-success is-large" v-bind:value="calculateProgress(currentCard)" max="100">
+									</progress>
+									<button @click="waterCard(currentCard)" class="button ml-2">浇水</button>
+								</div>
+							</div>
 						</section>
 						<footer class="modal-card-foot">
 							<div class="buttons">
