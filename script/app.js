@@ -106,10 +106,14 @@ new Vue({
 			const newCard = {
 				id: Date.now().toString(),
 				title: '',
+				subtitle: '',
 				description: '',
 				wateringInterval: 7,
 				lastWatered: '',
-				image: ''
+				image: '',
+				sunlight: '',
+				temperatureMin: '15',  // 默认最低温度
+				temperatureMax: '25'   // 默认最高温度
 			};
 			this.cards.unshift(newCard); // 将新卡片添加到列表的开始
 			this.openModal(newCard, 'edit');
@@ -273,6 +277,15 @@ new Vue({
 					};
 				};
 				reader.readAsText(file);
+			}
+		},
+		getTemperatureClass(temperature) {
+			if (temperature <= 0) {
+				return 'has-text-info';
+			} else if (temperature > 0 && temperature < 25) {
+				return 'has-text-warning';
+			} else {
+				return 'has-text-danger';
 			}
 		},
 	}

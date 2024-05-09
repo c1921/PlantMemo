@@ -188,6 +188,15 @@
 								<p>{{ currentCard.description }}</p>
 							</div>
 							<p>光照: {{ currentCard.sunlight }}</p>
+							<p>适宜温度区间:
+								<span :class="getTemperatureClass(currentCard.temperatureMin)">
+									{{ currentCard.temperatureMin }} °C
+								</span> ~
+								<span :class="getTemperatureClass(currentCard.temperatureMax)">
+									{{ currentCard.temperatureMax }} °C
+								</span>
+							</p>
+
 							<p>上次浇水日期: {{ currentCard.lastWatered }}</p>
 							<p>浇水间隔: {{ currentCard.wateringInterval }} 天</p>
 							<div class="content">
@@ -252,6 +261,15 @@
 								placeholder="浇水间隔（天）">
 						</div>
 					</div>
+					<div class="field">
+						<label class="label">适宜温度区间（°C）</label>
+						<div class="control">
+							<input class="input" type="number" v-model="currentCard.temperatureMin" placeholder="最低温度">
+							<input class="input" type="number" v-model="currentCard.temperatureMax" placeholder="最高温度">
+						</div>
+					</div>
+
+
 					<div class="field">
 						<label class="label">选择图片</label>
 						<div class="file has-name" id="file-name">
