@@ -298,6 +298,15 @@ new Vue({
 				return '处在适宜温度区间';
 			}
 		},
+		temperatureWarning(temperatureMin, temperatureMax, currentTemp) {
+			if (currentTemp < temperatureMin) {
+				return '<span class="tag is-danger">低温</span>';
+			} else if (currentTemp > temperatureMax) {
+				return '<span class="tag is-danger">高温</span>';
+			} else {
+				return '';  // 适宜温度不显示警示
+			}
+		},
 		confirmTemperature() {
 			this.currentTemperature = this.inputTemperature;  // 更新当前温度
 		}

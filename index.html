@@ -159,6 +159,9 @@
 									</div>
 								</div>
 								<div class="content">
+									<div class="tags">
+										<div v-html="temperatureWarning(card.temperatureMin, card.temperatureMax, currentTemperature)"></div>
+									</div>
 									<p class="subtitle is-6">温度状态: {{ compareTemperature(card.temperatureMin, card.temperatureMax, currentTemperature) }}
 									</p>
 									<div class="field has-addons vertical-center">

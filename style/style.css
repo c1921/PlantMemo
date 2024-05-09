@@ -68,3 +68,7 @@ margin-bottom: 0
 .content {
     word-wrap: break-word;
 }
+
+.tags {
+    height: 24px;
+}
