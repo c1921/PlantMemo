@@ -29,6 +29,7 @@ new Vue({
 		selectedFileName: '',  // 在数据中添加一个用来存储文件名的属性
 		isModalOpen: false,
 		currentCard: null, // 当前显示在模态窗口中的卡片
+		modalMode: '', // 可以是 'edit' 或 'details'
 	},
 	mounted() {
 		this.$nextTick(() => {
@@ -55,9 +56,9 @@ new Vue({
 		});
 	},
 	methods: {
-		
-		openModal(card) {
+		openModal(card, mode) {
 			this.currentCard = card;
+			this.modalMode = mode; // 'edit' 或 'details'
 			this.isModalOpen = true;
 		},
 		closeModal() {
@@ -87,40 +88,57 @@ new Vue({
 		},
 
 		saveCard(card) {
-			// 保存修改
 			const transaction = this.db.transaction(['cards'], 'readwrite');
 			const objectStore = transaction.objectStore('cards');
 			const request = objectStore.put(card);
 			request.onsuccess = () => {
-				card.editing = false;
-				console.log('Saved:', card.title, card.subtitle, card.description, card.image, card.sunlight);
+				console.log('Card saved successfully');
+				this.modalMode = 'details'; // 切换到详情视图
+				// 如果你不想保持模态窗口打开，可以直接关闭它
+				// this.closeModal();
+			};
+			request.onerror = () => {
+				console.error('Error saving the card');
 			};
 		},
 		cancelEdit(card) {
-			// 弹出确认对话框
 			if (confirm("确定要取消编辑，并放弃所有未保存的更改吗？")) {
-				// 如果用户点击"确定"，则取消编辑并重新加载卡片数据
-				this.getCards();  // 重新加载卡片，放弃当前的编辑状态和更改
-			} else {
-				// 如果用户点击"取消"，则不执行任何操作，继续保持编辑状态
-				console.log('取消操作已取消，继续编辑');
+				// 用户确认取消编辑
+				this.modalMode = 'details'; // 切换回详情视图
+
+				// 重新加载卡片数据
+				this.loadCard(card.id); // 假设 loadCard 方法会从数据库重新加载数据
 			}
 		},
+		loadCard(cardId) {
+			const transaction = this.db.transaction(['cards'], 'readonly');
+			const objectStore = transaction.objectStore('cards');
+			const request = objectStore.get(cardId);
+			request.onsuccess = () => {
+				this.currentCard = request.result;
+			};
+			request.onerror = () => {
+				console.error('Failed to reload the card');
+			};
+		},
 		deleteCard(card) {
-			// 弹出确认对话框
-			if (confirm("确定要删除这个植物卡片吗？")) {
-				// 如果用户点击"确定"，则执行删除操作
+			if (confirm("确定要删除这个植物卡片吗？")) {  // 弹出确认对话框
 				const transaction = this.db.transaction(['cards'], 'readwrite');
 				const objectStore = transaction.objectStore('cards');
 				const request = objectStore.delete(card.id);
 				request.onsuccess = () => {
-					const index = this.cards.findIndex(item => item.id === card.id);
-					this.cards.splice(index, 1);
+					console.log('Card deleted successfully');
+					this.cards = this.cards.filter(c => c.id !== card.id); // 更新卡片列表，移除已删除的卡片
+					this.closeModal(); // 删除成功后关闭模态窗口
 				};
-			} else {
-				// 如果用户点击"取消"，则不执行任何操作
-				console.log('删除操作已取消');
+				request.onerror = () => {
+					console.error('Failed to delete the card');
+				};
 			}
+		},
+		closeModal() {
+			this.isModalOpen = false;
+			this.currentCard = null; // 清除当前卡片数据
 		},
 
 		handleFileUpload(event, card) {
