@@ -24,9 +24,29 @@ const openDB = () => {
 new Vue({
 	el: '#app',
 	data: {
+		currentCard: { title: '' }, // 提供一个默认空标题以防止读取错误
 		cards: [],
-		selectedFileName: ''  // 在数据中添加一个用来存储文件名的属性
+		selectedFileName: '',  // 在数据中添加一个用来存储文件名的属性
+		isModalOpen: false,
+		currentCard: null, // 当前显示在模态窗口中的卡片
 	},
+	mounted() {
+		this.$nextTick(() => {
+			// 此处确保DOM已经渲染完毕
+			const fileInput = document.querySelector("#file-name input[type=file]");
+			if (fileInput) {
+				fileInput.onchange = () => {
+					if (fileInput.files.length > 0) {
+						const fileName = document.querySelector("#file-name .file-name");
+						fileName.textContent = fileInput.files[0].name;
+					}
+				};
+			} else {
+				console.error('File input element not found!');
+			}
+		});
+	},
+
 	created() {
 		// 打开数据库并获取所有数据
 		openDB().then(db => {
@@ -35,6 +55,14 @@ new Vue({
 		});
 	},
 	methods: {
+		
+		openModal(card) {
+			this.currentCard = card;
+			this.isModalOpen = true;
+		},
+		closeModal() {
+			this.isModalOpen = false;
+		},
 		getCards() {
 			// 读取所有数据
 			const transaction = this.db.transaction(['cards'], 'readonly');
@@ -50,9 +78,14 @@ new Vue({
 			this.cards.unshift({ id: Date.now(), title: '', subtitle: '', description: '', image: '', sunlight: '', editing: true });
 		},
 		editCard(card) {
-			// 设置卡片为编辑模式
-			card.editing = true;
+			if (!card) {
+				console.error('Invalid card data!');
+				return; // 防止进一步处理无效的卡片数据
+			}
+			this.currentCard = card;
+			this.isModalOpen = true;
 		},
+
 		saveCard(card) {
 			// 保存修改
 			const transaction = this.db.transaction(['cards'], 'readwrite');

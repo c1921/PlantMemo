@@ -138,7 +138,6 @@
 
 				<div v-for="(card, index) in cards" :key="index">
 					<template v-if="!card.editing">
-
 						<div class="card">
 							<div class="card-image">
 								<figure class="image is-3by1">
@@ -160,84 +159,97 @@
 										</progress>
 										<button @click="waterCard(card)" class="button ml-2">浇水</button>
 									</div>
+									<button @click="openModal(card)" class="button is-info">详情</button>
 
 								</div>
 							</div>
 							<footer class="card-footer">
-								<button @click="editCard(card)" class="card-footer-item">编辑</button>
+								<button @click="editCard(card)" class="button is-info">编辑</button>
 
 							</footer>
 						</div>
 					</template>
-
-					<template v-else>
-						<div class="box">
-							<div id="file-name" class="file has-name">
-								<label class="file-label">
-									<input class="file-input" type="file" @change="handleFileUpload($event, card)"
-										name="resume" />
-									<span class="file-cta">
-										<span class="file-icon">
-											<i class="fas fa-upload"></i>
-										</span>
-										<span class="file-label"> 选择图片… </span>
-									</span>
-									<span class="file-name">{{ selectedFileName || '未加载图片' }}</span> </label>
-							</div>
-							<div class="field">
-								<label class="label">植物名称</label>
-								<div class="control">
-									<input class="input" type="text" v-model="card.title" placeholder="输入植物名称">
-								</div>
-							</div>
-							<div class="field">
-								<label class="label">植物学名</label>
-								<div class="control">
-									<input class="input" type="text" v-model="card.subtitle" placeholder="输入拉丁学名">
-								</div>
-							</div>
-							<div class="field">
-								<label class="label">简介</label>
-								<div class="control">
-									<textarea class="textarea" v-model="card.description"
-										placeholder="输入植物简介"></textarea>
-								</div>
-							</div>
-
-							<div class="field">
-								<label class="label">光照</label>
-								<div class="control">
-									<div class="select">
-										<select v-model="card.sunlight">
-											<option value="全日照">全日照</option>
-											<option value="半日照">半日照</option>
-										</select>
-									</div>
-								</div>
-							</div>
-							<div class="field">
-								<label class="label">上次浇水日期</label>
-								<div class="control">
-									<input class="input" type="date" v-model="card.lastWatered"
-										placeholder="Last Watered">
-								</div>
-							</div>
-							<div class="field">
-								<label class="label">浇水间隔</label>
-								<div class="control">
-									<input class="input" type="number" v-model="card.wateringInterval"
-										placeholder="浇水间隔（天）">
-								</div>
-							</div>
-							<button @click="saveCard(card)" class="button is-light">保存</button>
-							<button @click="cancelEdit(card)" class="button">取消</button>
-							<button @click="deleteCard(card)" class="button is-danger">删除</button>
-						</div>
-
-					</template>
 				</div>
 			</div>
 		</div>
+		<!-- 模态窗口 -->
+		<div class="modal" :class="{ 'is-active': isModalOpen && currentCard }">
+			<div class="modal-background"></div>
+			<div class="modal-content" v-if="currentCard">
+				<div class="box">
+					<h1 class="title">编辑植物信息</h1>
+					<div class="field">
+						<label class="label">植物名称</label>
+						<div class="control">
+							<input class="input" type="text" v-model="currentCard.title" placeholder="输入植物名称">
+						</div>
+					</div>
+					<div class="field">
+						<label class="label">植物学名</label>
+						<div class="control">
+							<input class="input" type="text" v-model="currentCard.subtitle" placeholder="输入拉丁学名">
+						</div>
+					</div>
+					<div class="field">
+						<label class="label">简介</label>
+						<div class="control">
+							<textarea class="textarea" v-model="currentCard.description" placeholder="输入植物简介"></textarea>
+						</div>
+					</div>
+					<div class="field">
+						<label class="label">光照</label>
+						<div class="control">
+							<div class="select">
+								<select v-model="currentCard.sunlight">
+									<option value="全日照">全日照</option>
+									<option value="半日照">半日照</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="field">
+						<label class="label">上次浇水日期</label>
+						<div class="control">
+							<input class="input" type="date" v-model="currentCard.lastWatered" placeholder="上次浇水日期">
+						</div>
+					</div>
+					<div class="field">
+						<label class="label">浇水间隔</label>
+						<div class="control">
+							<input class="input" type="number" v-model="currentCard.wateringInterval" placeholder="浇水间隔（天）">
+						</div>
+					</div>
+					<div class="field">
+						<label class="label">选择图片</label>
+						<div class="file has-name" id="file-name">
+							<label class="file-label">
+								<input class="file-input" type="file" name="resume"
+									@change="handleFileUpload($event, currentCard)">
+								<span class="file-cta">
+									<span class="file-icon">
+										<i class="fas fa-upload"></i>
+									</span>
+									<span class="file-label">
+										选择图片…
+									</span>
+								</span>
+								<span class="file-name">
+									{{ selectedFileName || '未加载图片' }}
+								</span>
+							</label>
+						</div>
+					</div>
+					<button @click="saveCard(currentCard)" class="button is-success">保存</button>
+					<button @click="cancelEdit(currentCard)" class="button">取消</button>
+					<button @click="deleteCard(currentCard)" class="button is-danger">删除</button>
+				</div>
+			</div>
+			<button class="modal-close is-large" aria-label="close" @click="closeModal"></button>
+		</div>
+
+
+
+
 	</div>
 	<script src="script/app.js"></script>
 	<script src="script/theme.js"></script>
