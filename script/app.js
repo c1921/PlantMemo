@@ -31,6 +31,8 @@ new Vue({
 		currentCard: null, // 当前显示在模态窗口中的卡片
 		modalMode: '', // 可以是 'edit' 或 'details'
 		isNewCard: false, // 标记是否为新建卡片
+		inputTemperature: 20,  // 用户输入的临时温度值
+        currentTemperature: 20,  // 确认后的当前温度值
 	},
 	mounted() {
 		this.$nextTick(() => {
@@ -183,8 +185,7 @@ new Vue({
 				// 如果没有选择文件，清除之前的文件名显示
 				this.selectedFileName = '';
 			}
-		}
-		,
+		},
 		calculateProgress(card) {
 			const today = new Date();
 			const lastWateredDate = new Date(card.lastWatered);
@@ -288,6 +289,18 @@ new Vue({
 				return 'has-text-danger';
 			}
 		},
+		compareTemperature(temperatureMin, temperatureMax) {
+			if (this.currentTemperature < temperatureMin) {
+				return '低于适宜温度';
+			} else if (this.currentTemperature > temperatureMax) {
+				return '高于适宜温度';
+			} else {
+				return '处在适宜温度区间';
+			}
+		},
+		confirmTemperature() {
+			this.currentTemperature = this.inputTemperature;  // 更新当前温度
+		}
 	}
 });
 

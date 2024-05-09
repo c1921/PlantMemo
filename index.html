@@ -123,6 +123,14 @@
 			<div class="is-flex is-justify-content-space-between">
 				<div>
 					<button id="new-plant-btn" @click="createNewCard" class="button is-success">新建植物</button>
+					<div class="field has-addons">
+						<div class="control">
+							<input class="input mr-2" type="number" v-model="inputTemperature" placeholder="输入当前温度 (°C)">
+						</div>
+						<div class="control">
+							<button class="button is-info" @click="confirmTemperature">确认</button>
+						</div>
+					</div>
 				</div>
 				<div>
 					<button @click="exportData" class="button">导出数据</button>
@@ -151,6 +159,8 @@
 									</div>
 								</div>
 								<div class="content">
+									<p class="subtitle is-6">温度状态: {{ compareTemperature(card.temperatureMin, card.temperatureMax, currentTemperature) }}
+									</p>
 									<div class="field has-addons vertical-center">
 										<progress class="progress is-success is-large"
 											v-bind:value="calculateProgress(card)" max="100">
@@ -187,21 +197,24 @@
 							<div class="content">
 								<p>{{ currentCard.description }}</p>
 							</div>
-							<p>光照: {{ currentCard.sunlight }}</p>
-							<p>适宜温度区间:
+							<p>光照：{{ currentCard.sunlight }}</p>
+							<p>当前温度：{{ currentTemperature }}°C</p>
+							<p>适宜温度区间：
 								<span :class="getTemperatureClass(currentCard.temperatureMin)">
-									{{ currentCard.temperatureMin }} °C
+									{{ currentCard.temperatureMin }}°C
 								</span> ~
 								<span :class="getTemperatureClass(currentCard.temperatureMax)">
-									{{ currentCard.temperatureMax }} °C
+									{{ currentCard.temperatureMax }}°C
 								</span>
 							</p>
-
-							<p>上次浇水日期: {{ currentCard.lastWatered }}</p>
-							<p>浇水间隔: {{ currentCard.wateringInterval }} 天</p>
+							<p>温度状态：当前温度 {{ currentTemperature }}°C，{{ compareTemperature(currentCard.temperatureMin, currentCard.temperatureMax) }}
+							</p>
+							<p>上次浇水日期：{{ currentCard.lastWatered }}</p>
+							<p>浇水间隔：{{ currentCard.wateringInterval }} 天</p>
 							<div class="content">
 								<div class="field has-addons vertical-center">
-									<progress class="progress is-success is-large" v-bind:value="calculateProgress(currentCard)" max="100">
+									<progress class="progress is-success is-large"
+										v-bind:value="calculateProgress(currentCard)" max="100">
 									</progress>
 									<button @click="waterCard(currentCard)" class="button ml-2">浇水</button>
 								</div>
