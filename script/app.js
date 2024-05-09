@@ -30,6 +30,7 @@ new Vue({
 		isModalOpen: false,
 		currentCard: null, // 当前显示在模态窗口中的卡片
 		modalMode: '', // 可以是 'edit' 或 'details'
+		isNewCard: false, // 标记是否为新建卡片
 	},
 	mounted() {
 		this.$nextTick(() => {
@@ -74,10 +75,6 @@ new Vue({
 				this.cards = request.result.map(card => ({ ...card, editing: false })).reverse();
 			};
 		},
-		newCard() {
-			// 添加新卡片
-			this.cards.unshift({ id: Date.now(), title: '', subtitle: '', description: '', image: '', sunlight: '', editing: true });
-		},
 		editCard(card) {
 			if (!card) {
 				console.error('Invalid card data!');
@@ -100,6 +97,19 @@ new Vue({
 			request.onerror = () => {
 				console.error('Error saving the card');
 			};
+		},
+		createNewCard() {
+			const newCard = {
+				id: Date.now().toString(),
+				title: '',
+				description: '',
+				wateringInterval: 7,
+				lastWatered: '',
+				image: ''
+			};
+			this.cards.unshift(newCard); // 将新卡片添加到列表的开始
+			this.openModal(newCard, 'edit');
+			this.isNewCard = true;
 		},
 		cancelEdit(card) {
 			if (confirm("确定要取消编辑，并放弃所有未保存的更改吗？")) {
@@ -262,6 +272,10 @@ new Vue({
 			}
 		},
 	}
+});
+
+document.querySelector("#new-plant-btn").addEventListener('click', function () {
+	app.createNewCard();
 });
 
 // 检索所选文件名
