@@ -175,29 +175,27 @@
 			<div class="modal-background"></div>
 			<div class="modal-content" v-if="currentCard">
 				<!-- 详情视图 -->
-				<div v-if="modalMode === 'details'" class="box">
-					<div class="card">
-						<div class="card-image">
-							<figure class="image is-3by1">
-								<img :src="currentCard.image" v-if="currentCard.image" alt="Card Image">
-							</figure>
-						</div>
-						<div class="card-content">
-							<div class="media">
-								<div class="media-content py-1">
-									<p class="title is-4">{{ currentCard.title }}</p>
-									<p class="subtitle is-4 is-italic">{{ currentCard.subtitle }}</p>
-								</div>
-							</div>
+				<div v-if="modalMode === 'details'">
+					<div class="modal-card">
+						<header class="modal-card-head">
+							<p class="modal-card-title">{{ currentCard.title }}</p>
+							<button class="delete" aria-label="close"></button>
+						</header>
+						<section class="modal-card-body">
+							
+							<p class="is-italic">{{ currentCard.subtitle }}</p>
+							<img :src="currentCard.image" v-if="currentCard.image" alt="Card Image">
 							<div class="content">
 								<p>{{ currentCard.description }}</p>
-								<p>光照: {{ currentCard.sunlight }}</p>
-								<p>上次浇水日期: {{ currentCard.lastWatered }}</p>
-								<p>浇水间隔: {{ currentCard.wateringInterval }} 天</p>
 							</div>
-						</div>
-						<footer class="card-footer">
-							<button @click="openModal(currentCard, 'edit')" class="card-footer-item">编辑</button>
+							<p>光照: {{ currentCard.sunlight }}</p>
+							<p>上次浇水日期: {{ currentCard.lastWatered }}</p>
+							<p>浇水间隔: {{ currentCard.wateringInterval }} 天</p>
+						</section>
+						<footer class="modal-card-foot">
+							<div class="buttons">
+								<button @click="openModal(currentCard, 'edit')" class="button is-success">编辑</button>
+							</div>
 						</footer>
 					</div>
 				</div>
