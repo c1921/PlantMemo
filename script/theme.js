@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const systemPreference = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    setTheme(systemPreference);
+    // 尝试从localStorage中获取主题设置，如果未设置，则使用系统偏好
+    const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    setTheme(savedTheme);
 });
 
 function setTheme(theme) {
@@ -14,6 +15,7 @@ function setTheme(theme) {
 
     // 根据主题设置 data-theme 属性和更新图标
     htmlElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme); // 将主题保存到localStorage
 
     if (theme === 'dark') {
         icon.className = 'fas fa-lg fa-moon'; // 改为月亮图标
