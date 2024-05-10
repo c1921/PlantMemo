@@ -125,7 +125,8 @@
 					<button id="new-plant-btn" @click="createNewCard" class="button is-success">新建植物</button>
 					<div class="field has-addons">
 						<div class="control">
-							<input class="input mr-2" type="number" v-model="inputTemperature" placeholder="输入当前温度 (°C)">
+							<input class="input mr-2" type="number" v-model="inputTemperature"
+								placeholder="输入当前温度 (°C)">
 						</div>
 						<div class="control">
 							<button class="button is-info" @click="confirmTemperature">确认</button>
@@ -160,10 +161,11 @@
 								</div>
 								<div class="content">
 									<div class="tags">
-										<div v-html="temperatureWarning(card.temperatureMin, card.temperatureMax, currentTemperature)"></div>
+										<span class="tag is-danger" v-show="getTemperatureTagContent(card)">{{ getTemperatureTagContent(card) }}</span>
+
 									</div>
-									<p class="subtitle is-6">温度状态: {{ compareTemperature(card.temperatureMin, card.temperatureMax, currentTemperature) }}
-									</p>
+									<!-- <p class="subtitle is-6">温度状态: {{ compareTemperature(card.temperatureMin, card.temperatureMax, currentTemperature) }}
+									</p> -->
 									<div class="field has-addons vertical-center">
 										<progress class="progress is-success is-large"
 											v-bind:value="calculateProgress(card)" max="100">
@@ -210,7 +212,8 @@
 									{{ currentCard.temperatureMax }}°C
 								</span>
 							</p>
-							<p>温度状态：当前温度 {{ currentTemperature }}°C，{{ compareTemperature(currentCard.temperatureMin, currentCard.temperatureMax) }}
+							<p>温度状态：当前温度 {{ currentTemperature }}°C，{{ compareTemperature(currentCard.temperatureMin,
+								currentCard.temperatureMax) }}
 							</p>
 							<p>上次浇水日期：{{ currentCard.lastWatered }}</p>
 							<p>浇水间隔：{{ currentCard.wateringInterval }} 天</p>

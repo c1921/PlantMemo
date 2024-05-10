@@ -24,16 +24,16 @@ const openDB = () => {
 new Vue({
 	el: '#app',
 	data: {
-		currentCard: { title: '' }, // 提供一个默认空标题以防止读取错误
+		currentCard: null, // 初始化为null，用于存储当前植物卡片
 		cards: [],
 		selectedFileName: '',  // 在数据中添加一个用来存储文件名的属性
 		isModalOpen: false,
-		currentCard: null, // 当前显示在模态窗口中的卡片
 		modalMode: '', // 可以是 'edit' 或 'details'
 		isNewCard: false, // 标记是否为新建卡片
 		inputTemperature: 20,  // 用户输入的临时温度值
-        currentTemperature: 20,  // 确认后的当前温度值
+		currentTemperature: 20,  // 确认后的当前温度值
 	},
+
 	mounted() {
 		this.$nextTick(() => {
 			// 此处确保DOM已经渲染完毕
@@ -219,25 +219,6 @@ new Vue({
 		triggerFileInput() {
 			document.getElementById('fileInput').click(); // 触发隐藏的文件输入点击事件
 		},
-		importData(event) {
-			const file = event.target.files[0];
-			if (file) {
-				const reader = new FileReader();
-				reader.onload = (e) => {
-					const cards = JSON.parse(e.target.result);
-					const transaction = this.db.transaction(['cards'], 'readwrite');
-					const objectStore = transaction.objectStore('cards');
-					cards.forEach(card => {
-						objectStore.put(card);
-					});
-					transaction.oncomplete = () => {
-						console.log('所有数据已成功导入');
-						this.getCards(); // 重新加载卡片以更新视图
-					};
-				};
-				reader.readAsText(file);
-			}
-		},
 		exportData() {
 			const transaction = this.db.transaction(['cards'], 'readonly');
 			const objectStore = transaction.objectStore('cards');
@@ -290,38 +271,34 @@ new Vue({
 			}
 		},
 		compareTemperature(temperatureMin, temperatureMax) {
-			if (this.currentTemperature < temperatureMin) {
+			// 确保温度值是数字
+			const currentTemp = parseInt(this.currentTemperature);
+			const minTemp = parseInt(temperatureMin);
+			const maxTemp = parseInt(temperatureMax);
+
+			if (currentTemp < minTemp) {
 				return '低于适宜温度';
-			} else if (this.currentTemperature > temperatureMax) {
+			} else if (currentTemp > maxTemp) {
 				return '高于适宜温度';
 			} else {
 				return '处在适宜温度区间';
 			}
 		},
-		temperatureWarning(temperatureMin, temperatureMax, currentTemp) {
-			if (currentTemp < temperatureMin) {
-				return '<span class="tag is-danger">低温</span>';
-			} else if (currentTemp > temperatureMax) {
-				return '<span class="tag is-danger">高温</span>';
-			} else {
-				return '';  // 适宜温度不显示警示
-			}
-		},
 		confirmTemperature() {
-			this.currentTemperature = this.inputTemperature;  // 更新当前温度
-		}
+			// 将输入温度转换为整数并更新当前温度
+			this.currentTemperature = parseInt(this.inputTemperature);
+		},
+		getTemperatureTagContent(card) {
+			if (this.currentTemperature < card.temperatureMin) {
+				return '低温';
+			} else if (this.currentTemperature > card.temperatureMax) {
+				return '高温';
+			}
+			return '';
+		},
 	}
 });
 
-document.querySelector("#new-plant-btn").addEventListener('click', function () {
-	app.createNewCard();
-});
 
 // 检索所选文件名
 const fileInput = document.querySelector("#file-name input[type=file]");
-fileInput.onchange = () => {
-	if (fileInput.files.length > 0) {
-		const fileName = document.querySelector("#file-name .file-name");
-		fileName.textContent = fileInput.files[0].name;
-	}
-};
